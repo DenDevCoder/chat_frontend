@@ -1,7 +1,12 @@
-import React from "react";
+import ChatTemplate from "../templates/ChatTemplate";
+import ContainerWithSidebar from "../templates/PaddingedContainerWithSidebar";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <ContainerWithSidebar>
+      <ChatTemplate />
+    </ContainerWithSidebar>
+  );
 };
 
 export default Home;
