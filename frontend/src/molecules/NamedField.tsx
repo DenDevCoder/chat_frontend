@@ -6,13 +6,18 @@ import { Box } from "@mui/material";
 interface NamedFieldProps {
   label: string;
   mt?: string;
+  type?: string;
 }
 
-export const NamedField: React.FC<NamedFieldProps> = ({ label, mt = 0 }) => {
+export const NamedField: React.FC<NamedFieldProps> = ({
+  label,
+  mt = 0,
+  type = "text",
+}) => {
   return (
     <Box sx={{ mt }}>
       <MainText>{label}</MainText>
-      <FormInput />
+      <FormInput type={type} />
     </Box>
   );
 };

@@ -9,7 +9,7 @@ const LoginForm = () => {
   return (
     <StyledFormContainer>
       <NamedField label="Email" />
-      <NamedField label="Password" mt="1rem" />
+      <NamedField label="Password" mt="1rem" type="password" />
       <StyledButton fullWidth sx={{ mt: "20px" }}>
         Login
       </StyledButton>
