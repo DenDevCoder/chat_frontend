@@ -4,12 +4,35 @@ import { LinkText } from "../atoms/LinkStyleText";
 import { Link } from "react-router-dom";
 import { CenteredText } from "../atoms/CenteredText";
 import { StyledFormContainer } from "../atoms/AuthFormContainer";
+import React from "react";
 
-const LoginForm = () => {
+interface LoginFormProps {
+  email: string;
+  password: string;
+  setEmail: (arg: string) => void;
+  setPassword: (arg: string) => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({
+  email,
+  password,
+  setEmail,
+  setPassword,
+}) => {
   return (
     <StyledFormContainer>
-      <NamedField label="Email" />
-      <NamedField label="Password" mt="1rem" type="password" />
+      <NamedField
+        label="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <NamedField
+        label="Password"
+        mt="1rem"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <StyledButton fullWidth sx={{ mt: "20px" }}>
         Login
       </StyledButton>
