@@ -44,7 +44,10 @@ const Sidebar = () => {
         </StyledListItem>
 
         <StyledListItem
-          sx={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+          sx={{
+            justifyContent: isCollapsed ? "center" : "flex-start",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+          }}
         >
           <StyledListAvatar
             margin="0 auto"
@@ -52,9 +55,7 @@ const Sidebar = () => {
             src="/static/images/avatar/1.jpg"
           />
 
-          {!isCollapsed && (
-            <StyledListItemText primary="Denis" secondary="Hello world" />
-          )}
+          {!isCollapsed && <StyledListItemText primary="Denis" />}
         </StyledListItem>
       </StyledList>
     </StyledPaper>

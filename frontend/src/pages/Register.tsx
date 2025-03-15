@@ -9,6 +9,12 @@ const Register = () => {
   const [email, setEmail] = useState<string>("");
   const [repeatedPassword, setRepeatedPassword] = useState<string>("");
 
+  const clearState = () => {
+    setUsername(""), setPassword("");
+    setEmail("");
+    setRepeatedPassword("");
+  };
+
   const handleRegister = async (email: string, password: string) => {
     try {
       if (password !== repeatedPassword) {
@@ -20,6 +26,7 @@ const Register = () => {
         return null;
       }
       await signUpNewUser(email, password);
+      clearState();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error

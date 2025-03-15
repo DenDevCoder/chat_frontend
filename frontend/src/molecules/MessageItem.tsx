@@ -1,4 +1,3 @@
-import React from "react";
 import { StyledPaper } from "../atoms/StyledPaper";
 
 const MessageItem = () => {

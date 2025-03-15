@@ -11,6 +11,7 @@ interface LoginFormProps {
   password: string;
   setEmail: (arg: string) => void;
   setPassword: (arg: string) => void;
+  handleSignIn: (email: string, password: string) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({
@@ -18,6 +19,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   password,
   setEmail,
   setPassword,
+  handleSignIn,
 }) => {
   return (
     <StyledFormContainer>
@@ -33,7 +35,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <StyledButton fullWidth sx={{ mt: "20px" }}>
+      <StyledButton
+        onClick={() => handleSignIn(email, password)}
+        fullWidth
+        sx={{ mt: "20px" }}
+      >
         Login
       </StyledButton>
       <CenteredText mt={"2rem"}>
