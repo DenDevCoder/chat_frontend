@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthUserInfo } from "../supabase/auth";
-import { Session } from "@supabase/supabase-js";
+import { setUser } from "../redux/Slice/userSlice";
+import { useDispatch } from "react-redux";
 
 const useAuthUser = () => {
-  const [user, setUser] = useState<Session | null>(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,7 +16,7 @@ const useAuthUser = () => {
           navigate("/signIn");
         }
         console.log(user.session);
-        setUser(user.session);
+        dispatch(setUser(user.session));
       } catch (error: unknown) {
         const errorMessage =
           error instanceof Error
@@ -25,8 +26,7 @@ const useAuthUser = () => {
       }
     };
     fetchUser();
-  }, [navigate]);
-  return user;
+  }, [navigate, dispatch]);
 };
 
 export default useAuthUser;
