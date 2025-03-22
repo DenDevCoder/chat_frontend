@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuthUserInfo } from "../supabase/auth";
 import { setUser } from "../redux/Slice/userSlice";
 import { useDispatch } from "react-redux";
+import { getUserInfoById } from "../api/user-api";
 
 const useAuthUser = () => {
   const dispatch = useDispatch();
@@ -11,12 +12,15 @@ const useAuthUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await getAuthUserInfo();
-        if (!user.session) {
+        const userSession = await getAuthUserInfo();
+        if (!userSession.session) {
           navigate("/signIn");
         }
-        console.log(user.session);
-        dispatch(setUser(user.session));
+        console.log(userSession.session);
+        const userInfo = await getUserInfoById(userSession.session?.user.id!);
+        dispatch(
+          setUser({ user: userSession.session, username: userInfo.username })
+        );
       } catch (error: unknown) {
         const errorMessage =
           error instanceof Error

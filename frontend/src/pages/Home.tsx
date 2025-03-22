@@ -3,7 +3,7 @@ import ChatTemplate from "../templates/ChatTemplate";
 import ContainerWithSidebar from "../templates/PaddingedContainerWithSidebar";
 
 const Home = () => {
-  useAuthUser();
+  const user = useAuthUser();
   return (
     <ContainerWithSidebar>
       <ChatTemplate />

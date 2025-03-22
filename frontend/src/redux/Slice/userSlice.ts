@@ -3,18 +3,21 @@ import { Session } from "@supabase/supabase-js";
 
 interface UserState {
   user: Session | null;
+  username: string;
 }
 
 const initialState: UserState = {
   user: null,
+  username: "",
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<Session | null>) {
-      state.user = action.payload;
+    setUser(state, action: PayloadAction<UserState>) {
+      state.user = action.payload.user;
+      state.username = action.payload.username;
     },
   },
 });

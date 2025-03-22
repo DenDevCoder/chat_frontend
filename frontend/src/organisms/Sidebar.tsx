@@ -1,15 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { debounce } from "lodash";
 import { StyledPaper } from "../atoms/StyledPaper";
 import { StyledList } from "../atoms/StyledList";
-import StyledListAvatar from "../atoms/StyledListAvatar";
-import StyledListItemText from "../atoms/StyledListItemText";
 import { StyledListItem } from "../atoms/StyledListItem";
-import { IconButton } from "@mui/material";
+import { IconButton, TextField } from "@mui/material";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { IUser } from "../api/dto/user.dto";
+import { getUsersByTag } from "../api/user-api";
+import UserItem from "../molecules/UserItem";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [value, setValue] = useState<string>("");
+  const [findedUser, setFindedUser] = useState<IUser[]>([]);
+  const username = useSelector(
+    (state: RootState) => state.userSession.username
+  );
+
+  const fetchUsers = async () => {
+    const users = await getUsersByTag(value);
+    setFindedUser(users);
+  };
+  const debouncedFetchResult = debounce(fetchUsers, 500);
+
+  useEffect(() => {
+    debouncedFetchResult();
+    return () => debouncedFetchResult.cancel();
+  }, [value]);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -43,20 +63,24 @@ const Sidebar = () => {
           </IconButton>
         </StyledListItem>
 
-        <StyledListItem
-          sx={{
-            justifyContent: isCollapsed ? "center" : "flex-start",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-          }}
-        >
-          <StyledListAvatar
-            margin="0 auto"
-            alt="Denis"
-            src="/static/images/avatar/1.jpg"
-          />
+        <UserItem username={username} isCollapsed={isCollapsed} />
+        {!isCollapsed && (
+          <StyledListItem>
+            <TextField
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="find chat"
+            />
+          </StyledListItem>
+        )}
 
-          {!isCollapsed && <StyledListItemText primary="Denis" />}
-        </StyledListItem>
+        {findedUser.map((user) => (
+          <UserItem
+            isCollapsed={isCollapsed}
+            username={user.username}
+            user={user}
+          />
+        ))}
       </StyledList>
     </StyledPaper>
   );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import RegisterForm from "../organisms/RegisterForm";
 import CenteredForm from "../templates/CenteredFormWithLogo";
 import { signUpNewUser } from "../supabase/auth";
+import { addUserToTable } from "../api/user-api";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
@@ -25,7 +26,15 @@ const Register = () => {
         console.log("all input is required!");
         return null;
       }
-      await signUpNewUser(email, password);
+      const user = await signUpNewUser(email, password);
+      await addUserToTable(
+        user.user?.id!,
+        username,
+        email,
+        password,
+        `@${username}`
+      );
+
       clearState();
     } catch (error: unknown) {
       const errorMessage =
