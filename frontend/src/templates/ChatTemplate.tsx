@@ -3,6 +3,8 @@ import { Box } from "@mui/material";
 import { CenteredText } from "../atoms/CenteredText";
 import MessageItem from "../molecules/MessageItem";
 import MessageInput from "../molecules/MessageInput";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const FullSizeContainer = styled(Box)`
   width: 100%;
@@ -23,10 +25,11 @@ const MessageInputContainer = styled(Box)`
 `;
 
 const ChatTemplate = () => {
+  const chat = useSelector((state: RootState) => state.chatInfo);
   return (
     <FullSizeContainer>
       <CenteredText variant="h6" fontWeight={700}>
-        Chat Name
+        {chat.chatName}
       </CenteredText>
       <MessageContainer>
         <MessageItem />
