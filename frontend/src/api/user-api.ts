@@ -1,7 +1,8 @@
 import axios from "axios";
 import { AxiosResponse } from "axios";
-import { backend_user_api } from "../config/env-config";
+import { backend_api } from "../config/env-config";
 import { IUser } from "./dto/user.dto";
+import { getToken } from "./token";
 export const addUserToTable = async (
   id: string,
   username: string,
@@ -9,7 +10,7 @@ export const addUserToTable = async (
   password: string,
   tag: string
 ) => {
-  return await axios.post(`${backend_user_api}/register`, {
+  return await axios.post(`${backend_api}/user`, {
     id,
     username,
     gmail,
@@ -20,14 +21,19 @@ export const addUserToTable = async (
 
 export const getUsersByTag = async (tag: string) => {
   const users: AxiosResponse<IUser[]> = await axios.get(
-    `${backend_user_api}/tag/${tag}`
+    `${backend_api}/user/${tag}`
   );
+  console.log(`tag: ${users.data}`);
   return users.data;
 };
 
 export const getUserInfoById = async (id: string) => {
-  const user: AxiosResponse<IUser> = await axios.get(
-    `${backend_user_api}/${id}`
-  );
+  const token = await getToken();
+  const user: AxiosResponse<IUser> = await axios.get(`${backend_api}/user`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log(user);
   return user.data;
 };

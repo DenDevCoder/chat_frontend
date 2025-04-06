@@ -13,8 +13,11 @@ import { getUsersByTag } from "../api/user-api";
 import UserItem from "../molecules/UserItem";
 import { getAllChats } from "../api/chat-api";
 import { IChats } from "../api/dto/chat.dto";
+import { useSocket } from "../context/SocketProvider";
+import { stat } from "fs";
 
 const Sidebar = () => {
+  const { socket } = useSocket();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [value, setValue] = useState<string>("");
   const [chats, setChats] = useState<IChats[]>([]);
@@ -22,7 +25,7 @@ const Sidebar = () => {
   const username = useSelector(
     (state: RootState) => state.userSession.username
   );
-
+  const userInfo = useSelector((state: RootState) => state.userSession);
   const fetchUsers = async () => {
     const users = await getUsersByTag(value);
     setFindedUser(users);
@@ -30,12 +33,45 @@ const Sidebar = () => {
   const debouncedFetchResult = debounce(fetchUsers, 500);
 
   useEffect(() => {
+    if (socket) {
+      console.log("Socket connection status:", socket.connected);
+
+      socket.on("connect", () => {
+        console.log("Connected to socket server");
+      });
+
+      socket.on("connect_error", (err) => {
+        console.log("Socket connection error:", err);
+      });
+    }
+  }, [socket]);
+
+  useEffect(() => {
     const fetchChats = async () => {
-      const chats = await getAllChats();
-      setChats(chats);
+      if (socket) {
+        const chats = await getAllChats();
+        setChats(chats);
+
+        chats.forEach((chat) => {
+          socket?.emit("join-chat", {
+            chatId: chat.chatId,
+          });
+          console.log(`Subscribed to chat ${chat.chatId}`);
+        });
+      }
     };
+
     fetchChats();
-  }, []);
+
+    return () => {
+      if (chats.length > 0) {
+        chats.forEach((chat) => {
+          socket?.emit("leave-chat", { chatId: chat.chatId });
+          console.log(`Unsubscribed from chat ${chat.chatId}`);
+        });
+      }
+    };
+  }, [socket]);
 
   useEffect(() => {
     debouncedFetchResult();
@@ -73,7 +109,6 @@ const Sidebar = () => {
             {isCollapsed ? <ArrowRightIcon /> : <ArrowLeftIcon />}
           </IconButton>
         </StyledListItem>
-        <UserItem username={username} isCollapsed={isCollapsed} />
         {!isCollapsed && (
           <StyledListItem>
             <TextField

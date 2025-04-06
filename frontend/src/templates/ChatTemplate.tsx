@@ -5,6 +5,10 @@ import MessageItem from "../molecules/MessageItem";
 import MessageInput from "../molecules/MessageInput";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { useEffect, useState } from "react";
+import { messageDto } from "../api/dto/message.dto";
+import { useSocket } from "../context/SocketProvider";
+import { chatHistory } from "../api/chat-api";
 
 const FullSizeContainer = styled(Box)`
   width: 100%;
@@ -15,6 +19,8 @@ const FullSizeContainer = styled(Box)`
 `;
 
 const MessageContainer = styled(Box)`
+  display: flex;
+  flex-direction: column;
   flex: 1;
 `;
 
@@ -25,6 +31,21 @@ const MessageInputContainer = styled(Box)`
 `;
 
 const ChatTemplate = () => {
+  const { socket } = useSocket();
+  const chatExist = useSelector((state: RootState) => state.chat);
+  const user = useSelector((state: RootState) => state.userSession).user;
+  const [messages, setMesages] = useState<messageDto[]>([]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (chatExist.chatId) {
+        const messages = await chatHistory(chatExist.chatId);
+        setMesages(messages);
+      }
+    };
+    fetchHistory();
+  }, [chatExist.chatId]);
+
   const chat = useSelector((state: RootState) => state.chatInfo);
   return (
     <FullSizeContainer>
@@ -32,7 +53,13 @@ const ChatTemplate = () => {
         {chat.chatName}
       </CenteredText>
       <MessageContainer>
-        <MessageItem />
+        {messages.map((mes) =>
+          user?.user.id === mes.sender.id ? (
+            <MessageItem text={mes.text} isCurrentUser={true} />
+          ) : (
+            <MessageItem text={mes.text} isCurrentUser={false} />
+          )
+        )}
       </MessageContainer>
       <MessageInputContainer>
         <MessageInput />
