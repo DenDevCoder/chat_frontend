@@ -3,34 +3,53 @@ import { debounce } from "lodash";
 import { StyledPaper } from "../atoms/StyledPaper";
 import { StyledList } from "../atoms/StyledList";
 import { StyledListItem } from "../atoms/StyledListItem";
-import { IconButton, TextField } from "@mui/material";
+import {
+  IconButton,
+  TextField,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+import LogoutIcon from "@mui/icons-material/Logout";
+
 import { IUser } from "../api/dto/user.dto";
 import { getUsersByTag } from "../api/user-api";
 import UserItem from "../molecules/UserItem";
 import { getAllChats } from "../api/chat-api";
 import { IChats } from "../api/dto/chat.dto";
 import { useSocket } from "../context/SocketProvider";
-import { stat } from "fs";
+import { useNavigate } from "react-router-dom";
+import { signOut } from "../supabase/auth";
+import ExitDialog from "../molecules/ExitDialog";
 
 const Sidebar = () => {
   const { socket } = useSocket();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [value, setValue] = useState<string>("");
   const [chats, setChats] = useState<IChats[]>([]);
+  const [exit, setExit] = useState<boolean>(false);
   const [findedUser, setFindedUser] = useState<IUser[]>([]);
-  const username = useSelector(
-    (state: RootState) => state.userSession.username
-  );
-  const userInfo = useSelector((state: RootState) => state.userSession);
+  const navigate = useNavigate();
+
   const fetchUsers = async () => {
     const users = await getUsersByTag(value);
     setFindedUser(users);
   };
   const debouncedFetchResult = debounce(fetchUsers, 500);
+
+  const handleLogout = async () => {
+    if (socket && chats.length > 0) {
+      chats.forEach((chat) => {
+        socket.emit("leave-chat", { chatId: chat.chatId });
+      });
+    }
+    await signOut();
+    navigate("/login");
+    if (socket) {
+      socket.disconnect();
+    }
+  };
 
   useEffect(() => {
     if (socket) {
@@ -88,9 +107,11 @@ const Sidebar = () => {
         width: isCollapsed ? "60px" : "250px",
         height: "100%",
         transition: "width 0.3s",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <StyledList sx={{ p: 0 }}>
+      <StyledList sx={{ p: 0, flex: 1 }}>
         <StyledListItem
           sx={{
             justifyContent: "flex-end",
@@ -115,6 +136,7 @@ const Sidebar = () => {
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="find chat"
+              fullWidth
             />
           </StyledListItem>
         )}
@@ -122,6 +144,7 @@ const Sidebar = () => {
         {!value &&
           chats.map((chat) => (
             <UserItem
+              key={chat.chatId}
               username={chat.user.username}
               userId={chat.user.id}
               isCollapsed={isCollapsed}
@@ -131,12 +154,44 @@ const Sidebar = () => {
         {value &&
           findedUser.map((user) => (
             <UserItem
+              key={user.id}
               isCollapsed={isCollapsed}
               username={user.username}
               userId={user.id}
             />
           ))}
       </StyledList>
+
+      <StyledList sx={{ p: 0 }}>
+        <StyledListItem
+          onClick={() => setExit(true)}
+          sx={{
+            borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          {!isCollapsed && (
+            <>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </>
+          )}
+          {isCollapsed && (
+            <IconButton>
+              <LogoutIcon />
+            </IconButton>
+          )}
+        </StyledListItem>
+      </StyledList>
+      <ExitDialog
+        open={exit}
+        onClose={() => setExit(false)}
+        onConfirm={handleLogout}
+      />
     </StyledPaper>
   );
 };

@@ -6,7 +6,7 @@ import { RootState } from "../redux/store";
 import CentredFullscreenContainer from "../templates/CentredFullscreenContainer";
 import NotExistDilog from "../molecules/NotExistDilog";
 const Home = () => {
-  const user = useAuthUser();
+  useAuthUser();
   const chatExist = useSelector((state: RootState) => state.chat).exist;
   return (
     <ContainerWithSidebar>

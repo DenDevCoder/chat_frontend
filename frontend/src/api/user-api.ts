@@ -27,7 +27,7 @@ export const getUsersByTag = async (tag: string) => {
   return users.data;
 };
 
-export const getUserInfoById = async (id: string) => {
+export const getUserInfoById = async () => {
   const token = await getToken();
   const user: AxiosResponse<IUser> = await axios.get(`${backend_api}/user`, {
     headers: {

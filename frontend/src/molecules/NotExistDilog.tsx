@@ -1,5 +1,4 @@
-import React from "react";
-import { Box, Paper, Typography, Button } from "@mui/material";
+import { Paper, Typography, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { createChat } from "../api/chat-api";

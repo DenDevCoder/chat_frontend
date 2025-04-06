@@ -15,3 +15,12 @@ export const getAuthUserInfo = async () => {
   const { data } = await supabase.auth.getSession();
   return data;
 };
+
+export const signOut = async () => {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Ошибка при выходе:", error.message);
+  } else {
+    console.log("Успешный выход из системы");
+  }
+};

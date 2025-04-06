@@ -14,7 +14,6 @@ function App() {
     const checkSession = async () => {
       const {
         data: { session },
-        error,
       } = await supabase.auth.getSession();
 
       if (session) {
@@ -30,7 +29,7 @@ function App() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setUserId(session.user.id);
       } else {

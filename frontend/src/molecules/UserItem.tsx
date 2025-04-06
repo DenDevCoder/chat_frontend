@@ -2,7 +2,6 @@ import { FC } from "react";
 import { StyledListItem } from "../atoms/StyledListItem";
 import StyledListAvatar from "../atoms/StyledListAvatar";
 import StyledListItemText from "../atoms/StyledListItemText";
-import { IUser } from "../api/dto/user.dto";
 import { useDispatch } from "react-redux";
 import { setChat } from "../redux/Slice/chatSlice";
 import { chatExistCheck } from "../api/chat-api";
